@@ -1,0 +1,102 @@
+#%RAML 1.0
+title: GlobalWeather System AP
+version: v1.0
+baseUri: https://anypoint.mulesoft.com/mocking/api/v1/links/9232996c-007e-47e4-a858-ab6d2438106c/api # baseUri: http://localhost:8081/api
+# Defining role based customsecurity schemes but Im not using in this raml for simplicity 
+securitySchemes:
+  user_auth:
+    type: x-custom
+  admin_auth:
+    type: x-custom
+  
+types:
+  city: !include dataTypes/City.raml
+  weather: !include dataTypes/Weather.raml
+  
+  errorResponse: !include dataTypes/ErrorResponse.raml
+  successResponse: !include dataTypes/SuccessResponse.raml
+
+traits:
+  
+  cityFind: !include traits/trait-collection.raml
+
+/weather:
+  description: |
+    Working with weather:
+    * Retrieving weather for a particular city and country
+  
+  get:
+    #securedBy: [user_auth]
+    displayName: Get weather
+    description: |
+      Retrieve weather for a particular city and country
+    
+    queryParameters:
+      cityName:
+        displayName: City name
+        minLength: 0
+        maxLength: 64
+        required: true
+        example: "Sydney"
+      countryName:
+        displayName: Country name
+        minLength: 0
+        maxLength: 64
+        required: true
+        example: "Australia"
+      
+    responses:
+      200:
+        body:
+          application/json:
+            type: weather
+            example: !include examples/get_weather_example.yaml
+            
+            
+      404:
+          body:
+            application/json:
+              type: errorResponse
+              example: |
+                {
+                  "message": "Resource not found"
+                }     
+/city:
+  description: |
+    Working with city:
+    * Retrieving all cities for a particular country
+  
+  get:
+    displayName: Get city
+    description: |
+      Retrieve all cities for a particular country
+    is: [ cityFind ]
+    queryParameters:
+      countryName:
+        displayName: The country name
+        minLength: 0
+        maxLength: 64
+        required: true
+        example: "Australia"
+      
+    responses:
+      200:
+        body:
+          application/json:
+            type: city[]
+            example: !include examples/get_city_example.yaml
+            
+      404:
+          body:
+            application/json:
+              type: errorResponse
+              example: |
+                {
+                  "message": "Resource not found"
+                } 
+    
+    
+ 
+  
+  
+    

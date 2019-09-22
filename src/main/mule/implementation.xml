@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule
+	xmlns:xml-module="http://www.mulesoft.org/schema/mule/xml-module"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/xml-module http://www.mulesoft.org/schema/mule/xml-module/current/mule-xml-module.xsd">
+	
+	 <wsc:config name="Web_Service_GlobalWeather_Config" doc:name="Web Service Consumer Config" doc:id="c9d5ba86-93ab-4965-bd84-2ba6bba094c3" >
+		<wsc:connection wsdlLocation="http://localhost:8080/GlobalWeather?wsdl" service="GlobalWeather" port="GlobalWeatherHttpGet" address="http://localhost:8080/GlobalWeather"/>
+	</wsc:config>
+	
+	<!--  
+	<xml-module:config name="XML_Config" doc:name="XML Config" doc:id="c42509f6-8ec1-486a-8b24-425c533fb575" />-->
+	
+	<flow name="businessLogicFlow" doc:id="c21f6154-b11b-4535-abf3-77e77cfb2b29" >
+		<ee:transform doc:name="Transform Message" doc:id="9648f350-0d1e-4991-bf4f-743183d144e3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.webserviceX.NET/
+
+---
+
+
+ ((vars.resourceEntity.requestMethod): {
+      (CityName: attributes.queryParams.cityName) if (vars.resourceEntity.requestMethod== "GetWeather"),
+      CountryName: attributes.queryParams.countryName
+            
+            }) 
+           
+         
+       
+            
+          
+            
+            
+	
+]]>
+				</ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="67eaad2f-1894-4f32-8551-3c4db4c01ba1" message="#[payload]"/>
+		<wsc:consume doc:name="Consume" doc:id="92c1a431-b4c0-4572-8be5-3d98c47d8573" config-ref="Web_Service_GlobalWeather_Config" operation="GetWeather"/>
+		<logger level="INFO" doc:name="Logger" doc:id="370e3342-7036-4d66-905c-c1b678be912e" message='#[%dw 2.0
+output application/xml
+ns ns0 http://www.webserviceX.NET
+---
+{
+	"payload":payload.body
+	
+	}]'/>
+		<ee:transform doc:name="Transform Message" doc:id="4d4fddea-f35a-4356-80f9-5079b4c89191">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json duplicateKeyAsArray=true  
+import * from dw::core::Strings
+//var str= payload.kar
+
+
+//var str= payload.body."(vars.resourceEntity.responseMethod)" as String  
+
+var str= if((vars.resourceEntity.responseMethod)=="GetCitiesByCountryResponse") 
+payload.body.GetCitiesByCountryResponse as String  
+else payload.body.GetWeatherResponse as String  
+
+var xmlEscMap = {
+"&lt;" : "<",
+"&gt;" : ">",
+"&amp;" : "&",
+"&quot;" : "\"",
+"&apos;" : "\'"
+}
+var keys = xmlEscMap pluck $$
+var values = xmlEscMap pluck $
+var indexArray = xmlEscMap pluck $$$
+---
+read((((indexArray reduce ((index,acc= str) -> acc replace keys[index] with values[index]) ) 
+ replace /\<!\[CDATA\[/  with ("")) replace /\]\]\>/ with("") ) replace /\u000a/ with (""), "application/xml",
+ { indexedReader: "false" }
+ )
+ 
+
+]]>
+				</ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="3068754b-960c-4dab-b51b-9c5a660818bb" message="#[%dw 2.0
+output application/json
+---
+ payload]"/>
+	</flow>
+</mule>
