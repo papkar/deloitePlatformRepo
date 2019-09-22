@@ -31,7 +31,7 @@ output application/json
 		
 	}
 	else
-	{}]' doc:name="Set Variable" doc:id="66516fc4-22e8-4360-94de-082520d2bccc" variableName="resourceEntity"/>
+	{}]' doc:name="Set request Type" doc:id="66516fc4-22e8-4360-94de-082520d2bccc" variableName="resourceEntity"/>
 		<apikit:router config-ref="globalweather-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
@@ -143,7 +143,7 @@ output application/json
     </flow>
     <flow name="get:\city:globalweather-config">
         <flow-ref doc:name="businessFlow" doc:id="d9c6d251-a870-43e7-bcf2-f2cfcfbff103" name="businessLogicFlow"/>
-		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="65659658-0faf-4bf6-8144-8b92fbe11078">
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="65659658-0faf-4bf6-8144-8b92fbe11078" doc:name="Present cities response">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -162,7 +162,7 @@ var offset= attributes.queryParams.offset default 0
     </flow>
     <flow name="get:\weather:globalweather-config">
 		<flow-ref doc:name="businessLogicFlow" doc:id="54cf7a0e-8d2d-450d-bdc9-52edfc666194" name="businessLogicFlow"/>
-		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="f0d3b501-90a9-48c4-bc93-4c3e14715fd1">
+		<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="f0d3b501-90a9-48c4-bc93-4c3e14715fd1" doc:name="Mock mapping Presentation Weather">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json

@@ -22,7 +22,7 @@ http://www.mulesoft.org/schema/mule/xml-module http://www.mulesoft.org/schema/mu
 	<xml-module:config name="XML_Config" doc:name="XML Config" doc:id="c42509f6-8ec1-486a-8b24-425c533fb575" />-->
 	
 	<flow name="businessLogicFlow" doc:id="c21f6154-b11b-4535-abf3-77e77cfb2b29" >
-		<ee:transform doc:name="Transform Message" doc:id="9648f350-0d1e-4991-bf4f-743183d144e3" >
+		<ee:transform doc:name="Create SOAP request XML" doc:id="9648f350-0d1e-4991-bf4f-743183d144e3" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/xml
@@ -49,7 +49,7 @@ ns ns0 http://www.webserviceX.NET/
 			</ee:message>
 		</ee:transform>
 		<logger level="INFO" doc:name="Logger" doc:id="67eaad2f-1894-4f32-8551-3c4db4c01ba1" message="#[payload]"/>
-		<wsc:consume doc:name="Consume" doc:id="92c1a431-b4c0-4572-8be5-3d98c47d8573" config-ref="Web_Service_GlobalWeather_Config" operation="GetWeather"/>
+		<wsc:consume doc:name="Consume Global Weather Web Service" doc:id="92c1a431-b4c0-4572-8be5-3d98c47d8573" config-ref="Web_Service_GlobalWeather_Config" operation="GetWeather"/>
 		<logger level="INFO" doc:name="Logger" doc:id="370e3342-7036-4d66-905c-c1b678be912e" message='#[%dw 2.0
 output application/xml
 ns ns0 http://www.webserviceX.NET
@@ -64,8 +64,6 @@ ns ns0 http://www.webserviceX.NET
 output application/json duplicateKeyAsArray=true  
 import * from dw::core::Strings
 //var str= payload.kar
-
-
 //var str= payload.body."(vars.resourceEntity.responseMethod)" as String  
 
 var str= if((vars.resourceEntity.responseMethod)=="GetCitiesByCountryResponse") 
