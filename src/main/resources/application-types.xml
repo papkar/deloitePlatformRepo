@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
   <types:catalog>
-    <types:type name="wsdlGetWeatherResponse" format="json">
-      <types:shape format="weave" example="examples/wsdlGetWeatherResponse.json"><![CDATA[%dw 2.0
+    <types:type name="response" format="json">
+      <types:shape format="weave" example="examples/wsdlGetWeatherResponse-1.json"><![CDATA[%dw 2.0
 
-type wsdlGetWeatherResponse = {|
+type response = {|
   NewDataSet: {|
     Location: String, 
     Time: String, 
@@ -20,29 +20,14 @@ type wsdlGetWeatherResponse = {|
 
 ]]></types:shape>
     </types:type>
-    <types:type name="wsdlGetCitiesResponse" format="json">
-      <types:shape format="weave" example="examples/wsdlGetCitiesByCountry.json"><![CDATA[%dw 2.0
-
-type wsdlGetCitiesResponse = {|
-  NewDataSet: {|
-    Table: {|
-      Country: String, 
-      City: String
-    |}
-  |}
-|} {"example": "{\"NewDataSet\":{\"Table\":{\"Country\":\"Australia\",\"City\":\"Williamtown Aerodrome\"}}}"}
-
-]]></types:shape>
-    </types:type>
   </types:catalog>
   <types:enrichment select="#f0d3b501-90a9-48c4-bc93-4c3e14715fd1">
     <types:processor-declaration>
       <types:input-event>
         <types:message>
-          <types:payload type="wsdlGetWeatherResponse"/>
+          <types:payload type="response"/>
         </types:message>
       </types:input-event>
     </types:processor-declaration>
   </types:enrichment>
-  <types:enrichment select="#65659658-0faf-4bf6-8144-8b92fbe11078"/>
 </types:mule>
